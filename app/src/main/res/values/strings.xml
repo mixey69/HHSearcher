@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">HHSearcher</string>
+    <string name="search_url">https://api.hh.ru/vacancies?order_by=publication_time&amp;per_page=10&amp;</string>
+    <string name="search_fragment">SEARCH_FRAGMENT</string>
+    <string name="search_result_fragment">SEARCH_RESULT_FRAGMENT</string>
+    <string name="vacancy_fragment">VACANCY_FRAGMENT</string>
+</resources>
