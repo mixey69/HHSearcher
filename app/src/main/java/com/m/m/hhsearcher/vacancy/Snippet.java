@@ -13,4 +13,8 @@ public class Snippet {
     @Expose
     public String responsibility;
 
+    @Override
+    public String toString() {
+        return requirement + responsibility;
+    }
 }

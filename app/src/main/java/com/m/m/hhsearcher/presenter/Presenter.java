@@ -2,6 +2,7 @@ package com.m.m.hhsearcher.presenter;
 
 import com.m.m.hhsearcher.model.Searcher;
 import com.m.m.hhsearcher.model.SearcherInterface;
+import com.m.m.hhsearcher.vacancy.Item;
 import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
 
@@ -37,17 +38,17 @@ public class Presenter implements PresenterInterface {
     }
 
     @Override
-    public void updateView(List<?> vacancyList) {
+    public void updateView(List<Item> vacancyList) {
         mSearchResultView.showVacancyList(vacancyList);
     }
 
     @Override
     public void startSearch(String searchWord) {
+        mFragmentManager.displaySearchResultFragment();
         if (mSearcher == null){
             mSearcher = new Searcher(this);
         }
         mSearcher.firstSearch(searchWord);
-        mFragmentManager.displaySearchResultFragment();
     }
 
     public void setFirstSearchResult(List<String> firstSearchResult) {

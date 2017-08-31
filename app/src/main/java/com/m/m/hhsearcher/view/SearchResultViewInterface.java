@@ -1,5 +1,7 @@
 package com.m.m.hhsearcher.view;
 
+import com.m.m.hhsearcher.vacancy.Item;
+
 import java.util.List;
 
 /**
@@ -7,5 +9,5 @@ import java.util.List;
  */
 
 public interface SearchResultViewInterface {
-    void showVacancyList(List<?> vacancyList);
+    void showVacancyList(List<Item> vacancyList);
 }
