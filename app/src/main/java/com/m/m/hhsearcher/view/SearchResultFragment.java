@@ -58,9 +58,10 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
         @Override
         public void onBindViewHolder(VacancyViewHolder holder, int position) {
             Item displayedItem = mVacancyList.get(position);
-            holder.mCompanyName.setText(displayedItem.employer.name);
+            holder.mCompanyName.setText("at " + displayedItem.employer.name);
             holder.mVacancyName.setText(displayedItem.name);
             String jobDescription = displayedItem.snippet.toString();
+            jobDescription = jobDescription.replaceAll("<(/|)highlighttext>","");
             if (jobDescription.length() > 150){
                 jobDescription = jobDescription.substring(0,150) + "...";
             }
