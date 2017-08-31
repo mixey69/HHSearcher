@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.presenter.Presenter;
 import com.m.m.hhsearcher.presenter.PresenterInterface;
+import com.m.m.hhsearcher.vacancy.Item;
 
 /**
  * Created by mac on 29.08.17.
@@ -46,7 +47,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManagerIn
     }
 
     @Override
-    public void displayVacancyFragment() {
-        displayFragment(new VacancyFragment(), getString(R.string.vacancy_fragment));
+    public void displayVacancyFragment(Item item) {
+        VacancyFragment fragment = new VacancyFragment();
+        fragment.setDisplayedItem(item);
+        displayFragment(fragment, getString(R.string.vacancy_fragment));
     }
 }

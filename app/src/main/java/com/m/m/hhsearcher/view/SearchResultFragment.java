@@ -22,23 +22,23 @@ import java.util.List;
  */
 
 public class SearchResultFragment extends Fragment implements SearchResultViewInterface{
-    //@BindView(R.id.vacancy_list) RecyclerView mRecyclerView;
     RecyclerView mRecyclerView;
     VacancyListAdapter mAdapter;
     PresenterInterface mPresenter;
+    FragmentManagerInterface mFragmentManager;
     List<Item> mVacancyList;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.searchresultfragment_layout,container,false);
-       // ButterKnife.bind(getActivity());
         mRecyclerView = (RecyclerView) view.findViewById(R.id.vacancy_list);
         mPresenter = Presenter.getInstance();
         mPresenter.setSearchResultView(this);
         mAdapter = new VacancyListAdapter();
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mFragmentManager = (MainActivity)getActivity();
         return view;
     }
 
@@ -57,15 +57,20 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
 
         @Override
         public void onBindViewHolder(VacancyViewHolder holder, int position) {
-            Item displayedItem = mVacancyList.get(position);
+            final Item displayedItem = mVacancyList.get(position);
             holder.mCompanyName.setText("at " + displayedItem.employer.name);
             holder.mVacancyName.setText(displayedItem.name);
             String jobDescription = displayedItem.snippet.toString();
-            jobDescription = jobDescription.replaceAll("<(/|)highlighttext>","");
             if (jobDescription.length() > 150){
                 jobDescription = jobDescription.substring(0,150) + "...";
             }
             holder.mJobDescription.setText(jobDescription);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mFragmentManager.displayVacancyFragment(displayedItem);
+                }
+            });
         }
 
         @Override
@@ -77,16 +82,23 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
             }
         }
 
-        class VacancyViewHolder extends RecyclerView.ViewHolder{
+        class VacancyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             TextView mCompanyName;
             TextView mVacancyName;
             TextView mJobDescription;
+            SearchResultViewInterface mParentInterface;
 
             private VacancyViewHolder(View itemView) {
                 super(itemView);
+                mParentInterface = (SearchResultFragment)getParentFragment();
                 mCompanyName = (TextView) itemView.findViewById(R.id.item_company_name);
                 mVacancyName = (TextView) itemView.findViewById(R.id.item_vacancy_name);
                 mJobDescription = (TextView) itemView.findViewById(R.id.item_job_description);
+            }
+
+            @Override
+            public void onClick(View view) {
+
             }
         }
     }

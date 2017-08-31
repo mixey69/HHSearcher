@@ -15,6 +15,8 @@ public class Snippet {
 
     @Override
     public String toString() {
-        return requirement + responsibility;
+        String result = requirement + responsibility;
+        result = result.replaceAll("<(/|)highlighttext>","");
+        return result;
     }
 }
