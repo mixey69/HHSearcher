@@ -3,7 +3,7 @@ package com.m.m.hhsearcher.model;
 import android.util.Log;
 
 import com.m.m.hhsearcher.presenter.PresenterInterface;
-import com.m.m.hhsearcher.vacancy.Example;
+import com.m.m.hhsearcher.vacancy_item.Example;
 
 import java.util.LinkedList;
 
@@ -19,26 +19,34 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Searcher implements SearcherInterface{
     private PresenterInterface mPresenter;
-    private String searchWord;
     private Retrofit mRetrofit;
     private HHApi mHHApi;
+    private boolean isBusy;
 
     private final static String SEARCH_URL = "https://api.hh.ru/";
 
     @Override
-    public LinkedList firstSearch(String searchWord) {
-        mHHApi.getData(searchWord, 1,"publication_time", 10).enqueue(new Callback<Example>() {
+    public LinkedList search(String searchWord) {
+        isBusy = true;
+        mHHApi.getData(searchWord, mPresenter.getSearchTime(),"publication_time", 10).enqueue(new Callback<Example>() {
             @Override
             public void onResponse(Call<Example> call, Response<Example> response) {
+                isBusy = false;
                 mPresenter.updateView(response.body().items);
             }
 
             @Override
             public void onFailure(Call<Example> call, Throwable t) {
+                isBusy = false;
                 Log.e("retrofit", "called onFailure");
             }
         });
         return null;
+    }
+
+    @Override
+    public boolean getIsBusy() {
+        return isBusy;
     }
 
     public Searcher(PresenterInterface presenter) {

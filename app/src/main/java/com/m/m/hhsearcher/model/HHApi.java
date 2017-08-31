@@ -1,6 +1,6 @@
 package com.m.m.hhsearcher.model;
 
-import com.m.m.hhsearcher.vacancy.Example;
+import com.m.m.hhsearcher.vacancy_item.Example;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

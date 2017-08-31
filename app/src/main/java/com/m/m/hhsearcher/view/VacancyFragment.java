@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.m.m.hhsearcher.R;
-import com.m.m.hhsearcher.vacancy.Item;
+import com.m.m.hhsearcher.vacancy_item.Item;
 
 /**
  * Created by mac on 29.08.17.

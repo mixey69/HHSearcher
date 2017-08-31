@@ -7,5 +7,6 @@ import java.util.LinkedList;
  */
 
 public interface SearcherInterface {
-    LinkedList firstSearch(String searchWord);
+    LinkedList search(String searchWord);
+    boolean getIsBusy();
 }

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.presenter.Presenter;
 import com.m.m.hhsearcher.presenter.PresenterInterface;
-import com.m.m.hhsearcher.vacancy.Item;
+import com.m.m.hhsearcher.vacancy_item.Item;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
     RecyclerView mRecyclerView;
     VacancyListAdapter mAdapter;
     PresenterInterface mPresenter;
+    LinearLayoutManager mLayoutManager;
     FragmentManagerInterface mFragmentManager;
     List<Item> mVacancyList;
 
@@ -37,14 +38,34 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
         mPresenter.setSearchResultView(this);
         mAdapter = new VacancyListAdapter();
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mFragmentManager = (MainActivity)getActivity();
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = mLayoutManager.getChildCount();//смотрим сколько элементов на экране
+                int totalItemCount = mLayoutManager.getItemCount();//сколько всего элементов
+                int firstVisibleItems = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
+
+                if (!mPresenter.checkIfBusy()) {//проверяем, грузим мы что-то или нет, эта переменная должна быть вне класса  OnScrollListener
+                    if ( (visibleItemCount+firstVisibleItems) >= totalItemCount) {
+                            mPresenter.loadMore();
+                    }
+                }
+            }
+        });
         return view;
     }
 
     @Override
     public void showVacancyList(List<Item> vacancyList) {
-        mVacancyList = vacancyList;
+        if(mVacancyList == null){
+            mVacancyList = vacancyList;
+        }else {
+            mVacancyList.addAll(vacancyList);
+        }
         mAdapter.notifyDataSetChanged();
     }
 

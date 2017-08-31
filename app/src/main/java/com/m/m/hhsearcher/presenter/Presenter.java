@@ -2,7 +2,7 @@ package com.m.m.hhsearcher.presenter;
 
 import com.m.m.hhsearcher.model.Searcher;
 import com.m.m.hhsearcher.model.SearcherInterface;
-import com.m.m.hhsearcher.vacancy.Item;
+import com.m.m.hhsearcher.vacancy_item.Item;
 import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
 
@@ -17,7 +17,8 @@ public class Presenter implements PresenterInterface {
     private FragmentManagerInterface mFragmentManager;
     private SearchResultViewInterface mSearchResultView;
     private SearcherInterface mSearcher;
-    private List<String> firstSearchResult;
+    private String mSearchWord;
+    private Integer mSearchTime;
 
 
     public static Presenter getInstance() {
@@ -44,17 +45,30 @@ public class Presenter implements PresenterInterface {
 
     @Override
     public void startSearch(String searchWord) {
+        mSearchTime = 1;
+        mSearchWord = searchWord;
         mFragmentManager.displaySearchResultFragment();
         if (mSearcher == null){
             mSearcher = new Searcher(this);
         }
-        mSearcher.firstSearch(searchWord);
+        mSearcher.search(searchWord);
     }
 
-    public void setFirstSearchResult(List<String> firstSearchResult) {
-        this.firstSearchResult = firstSearchResult;
+    @Override
+    public void loadMore() {
+        mSearchTime++;
+        mSearcher.search(mSearchWord);
     }
 
+    @Override
+    public boolean checkIfBusy() {
+        return mSearcher.getIsBusy();
+    }
+
+    @Override
+    public Integer getSearchTime() {
+        return mSearchTime;
+    }
 
     public void setSearchResultView(SearchResultViewInterface searchResultView) {
         this.mSearchResultView = searchResultView;
