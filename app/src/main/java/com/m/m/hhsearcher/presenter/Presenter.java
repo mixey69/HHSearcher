@@ -2,9 +2,11 @@ package com.m.m.hhsearcher.presenter;
 
 import com.m.m.hhsearcher.model.Searcher;
 import com.m.m.hhsearcher.model.SearcherInterface;
+import com.m.m.hhsearcher.vacancy.Vacancy;
 import com.m.m.hhsearcher.vacancy_item.Item;
 import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
+import com.m.m.hhsearcher.view.VacancyViewInterface;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class Presenter implements PresenterInterface {
     private FragmentManagerInterface mFragmentManager;
     private SearchResultViewInterface mSearchResultView;
     private SearcherInterface mSearcher;
+    private VacancyViewInterface mVacancyView;
     private String mSearchWord;
     private Integer mSearchTime;
 
@@ -66,6 +69,16 @@ public class Presenter implements PresenterInterface {
     }
 
     @Override
+    public void getFullVacancyDescription(String vacancyId) {
+        mSearcher.findVacancy(vacancyId);
+    }
+
+    @Override
+    public void displayVacancyData(Vacancy vacancy) {
+        mVacancyView.showVacancy(vacancy);
+    }
+
+    @Override
     public Integer getSearchTime() {
         return mSearchTime;
     }
@@ -74,5 +87,8 @@ public class Presenter implements PresenterInterface {
         this.mSearchResultView = searchResultView;
     }
 
-
+    @Override
+    public void setVacancyView(VacancyViewInterface viewInterface) {
+        mVacancyView = viewInterface;
+    }
 }

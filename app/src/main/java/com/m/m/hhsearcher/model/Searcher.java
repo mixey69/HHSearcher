@@ -3,6 +3,7 @@ package com.m.m.hhsearcher.model;
 import android.util.Log;
 
 import com.m.m.hhsearcher.presenter.PresenterInterface;
+import com.m.m.hhsearcher.vacancy.Vacancy;
 import com.m.m.hhsearcher.vacancy_item.Example;
 
 import java.util.LinkedList;
@@ -38,6 +39,22 @@ public class Searcher implements SearcherInterface{
             @Override
             public void onFailure(Call<Example> call, Throwable t) {
                 isBusy = false;
+                Log.e("retrofit", "called onFailure");
+            }
+        });
+        return null;
+    }
+
+    @Override
+    public Vacancy findVacancy(String vacancyId) {
+        mHHApi.getVacancy(vacancyId).enqueue(new Callback<Vacancy>() {
+            @Override
+            public void onResponse(Call<Vacancy> call, Response<Vacancy> response) {
+                mPresenter.displayVacancyData(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Vacancy> call, Throwable t) {
                 Log.e("retrofit", "called onFailure");
             }
         });

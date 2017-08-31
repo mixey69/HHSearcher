@@ -49,8 +49,8 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
                 int totalItemCount = mLayoutManager.getItemCount();//сколько всего элементов
                 int firstVisibleItems = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
 
-                if (!mPresenter.checkIfBusy()) {//проверяем, грузим мы что-то или нет, эта переменная должна быть вне класса  OnScrollListener
-                    if ( (visibleItemCount+firstVisibleItems) >= totalItemCount) {
+                if (!mPresenter.checkIfBusy()) {
+                    if ((visibleItemCount+firstVisibleItems) >= totalItemCount) {
                             mPresenter.loadMore();
                     }
                 }
@@ -89,7 +89,8 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mFragmentManager.displayVacancyFragment(displayedItem);
+                    mFragmentManager.displayVacancyFragment();
+                    mPresenter.getFullVacancyDescription(displayedItem.id);
                 }
             });
         }

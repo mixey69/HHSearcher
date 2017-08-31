@@ -1,8 +1,10 @@
 package com.m.m.hhsearcher.presenter;
 
+import com.m.m.hhsearcher.vacancy.Vacancy;
 import com.m.m.hhsearcher.vacancy_item.Item;
 import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
+import com.m.m.hhsearcher.view.VacancyViewInterface;
 
 import java.util.List;
 
@@ -18,4 +20,7 @@ public interface PresenterInterface {
     Integer getSearchTime();
     void loadMore();
     boolean checkIfBusy();
+    void getFullVacancyDescription(String vacancyId);
+    void setVacancyView(VacancyViewInterface viewInterface);
+    void displayVacancyData(Vacancy vacancy);
 }

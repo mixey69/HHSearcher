@@ -47,9 +47,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManagerIn
     }
 
     @Override
-    public void displayVacancyFragment(Item item) {
-        VacancyFragment fragment = new VacancyFragment();
-        fragment.setDisplayedItem(item);
-        displayFragment(fragment, getString(R.string.vacancy_fragment));
+    public void displayVacancyFragment() {
+        displayFragment(new VacancyFragment(), getString(R.string.vacancy_fragment));
     }
 }

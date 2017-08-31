@@ -1,5 +1,7 @@
 package com.m.m.hhsearcher.model;
 
+import com.m.m.hhsearcher.vacancy.Vacancy;
+
 import java.util.LinkedList;
 
 /**
@@ -9,4 +11,5 @@ import java.util.LinkedList;
 public interface SearcherInterface {
     LinkedList search(String searchWord);
     boolean getIsBusy();
+    Vacancy findVacancy(String vacancyId);
 }

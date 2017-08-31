@@ -65,8 +65,5 @@ public class Item {
     @SerializedName("id")
     @Expose
     public String id;
-    @SerializedName("employment")
-    @Expose
-    public Employment employment;
 
 }
