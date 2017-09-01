@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.presenter.Presenter;
-import com.m.m.hhsearcher.presenter.PresenterInterface;
+import com.m.m.hhsearcher.presenter.PresenterViewInterface;
 
 /**
  * Created by mac on 29.08.17.
@@ -16,7 +16,7 @@ import com.m.m.hhsearcher.presenter.PresenterInterface;
 public class MainActivity extends AppCompatActivity implements FragmentManagerInterface {
 
     private Fragment mDisplayedFragment;
-    private PresenterInterface mPresenterInterface;
+    private PresenterViewInterface mPresenterInterface;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManagerIn
         mDisplayedFragment = fragment;
         getSupportFragmentManager()
                 .beginTransaction()
+                .addToBackStack(TAG)
                 .replace(R.id.main_fragment_container,fragment, TAG)
                 .commit();
     }

@@ -19,4 +19,16 @@ public class Salary {
     @Expose
     public Boolean gross;
 
+    @Override
+    public String toString() {
+        String result;
+        if (to == null && from == null){
+            result = "з/п не указана";
+        }else if (to != null){
+            result = "до " + to + " " + currency;
+        }else {
+            result = "от " + from + " " + currency;
+        }
+        return result;
+    }
 }

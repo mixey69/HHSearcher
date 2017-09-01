@@ -5,7 +5,7 @@ package com.m.m.hhsearcher.model;
  */
 
 public interface SearcherInterface {
-    void search(String searchWord);
+    void search(String searchWord,boolean isFirstSearch);
     boolean getIsBusy();
     void findVacancy(String vacancyId);
     void searchForNew(String searchWord);

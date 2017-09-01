@@ -2,23 +2,23 @@ package com.m.m.hhsearcher.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.model.vacancy_item.Item;
-import com.m.m.hhsearcher.presenter.Presenter;
-import com.m.m.hhsearcher.presenter.PresenterInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -29,10 +29,10 @@ import io.reactivex.schedulers.Schedulers;
  * Created by mac on 29.08.17.
  */
 
-public class SearchResultFragment extends Fragment implements SearchResultViewInterface{
-    RecyclerView mRecyclerView;
+public class SearchResultFragment extends ViewFragment implements SearchResultViewInterface{
+    @BindView(R.id.vacancy_list) RecyclerView mRecyclerView;
+    @BindView(R.id.progress_bar) ProgressBar mProgressBar;
     VacancyListAdapter mAdapter;
-    PresenterInterface mPresenter;
     LinearLayoutManager mLayoutManager;
     FragmentManagerInterface mFragmentManager;
     volatile ArrayList<Item> mVacancyList;
@@ -41,9 +41,7 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.searchresultfragment_layout,container,false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.vacancy_list);
-        mPresenter = Presenter.getInstance();
+        View view = super.onCreateView(inflater,container,savedInstanceState);
         mPresenter.setSearchResultView(this);
         mAdapter = new VacancyListAdapter();
         mRecyclerView.setAdapter(mAdapter);
@@ -56,23 +54,21 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
                 super.onScrolled(recyclerView, dx, dy);
                 int visibleItemCount = mLayoutManager.getChildCount();//смотрим сколько элементов на экране
                 int totalItemCount = mLayoutManager.getItemCount();//сколько всего элементов
-                int firstVisibleItems = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
-
-                if (!mPresenter.checkIfBusy()) {
-                    if ((visibleItemCount+firstVisibleItems) >= totalItemCount) {
+                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
+                    if ((visibleItemCount+firstVisibleItem) >= totalItemCount) {
                             mPresenter.loadMore();
+                            mProgressBar.setVisibility(View.VISIBLE);
                     }
-                }
             }
         });
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int firstVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
-                if(firstVisibleItems == 0) {
+                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                if(firstVisibleItem == 0) {
                     if (mSubscription == null) {
-                        mSubscription = Observable.interval(5000, TimeUnit.MILLISECONDS)
+                        mSubscription = Observable.interval(0, 5000, TimeUnit.MILLISECONDS)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Consumer<Long>() {
@@ -83,6 +79,7 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
                                             mSubscription = null;
                                         } else {
                                             mPresenter.refreshSearchResultData();
+                                            mProgressBar.setVisibility(View.VISIBLE);
                                         }
                                     }
                                 });
@@ -95,6 +92,11 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
     }
 
     @Override
+    protected int getLayoutId() {
+        return R.layout.searchresultfragment_layout;
+    }
+
+    @Override
     public void showVacancyList(List<Item> vacancyList) {
         if(mVacancyList == null){
             mVacancyList = new ArrayList<>(vacancyList);
@@ -102,15 +104,16 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
             mVacancyList.addAll(vacancyList);
         }
         mAdapter.notifyDataSetChanged();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
-    public void refreshVacancyList(List<Item> newVacancyList) {
-        int oldLength = mVacancyList.size();
+    public void updateVacancyList(List<Item> newVacancyList) {
         for (int i = newVacancyList.size() -1 ; i >= 0; i--){
             mVacancyList.add(0,newVacancyList.get(i));
         }
        mAdapter.notifyItemRangeInserted(0, newVacancyList.size());
+        mProgressBar.setVisibility(View.GONE);
     }
 
     class VacancyListAdapter extends RecyclerView.Adapter<VacancyListAdapter.VacancyViewHolder>{
@@ -149,23 +152,20 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
         }
 
         class VacancyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-            TextView mCompanyName;
-            TextView mVacancyName;
-            TextView mJobDescription;
+            @BindView(R.id.item_company_name) TextView mCompanyName;
+            @BindView(R.id.item_vacancy_name) TextView mVacancyName;
+            @BindView(R.id.item_job_description) TextView mJobDescription;
             SearchResultViewInterface mParentInterface;
 
             private VacancyViewHolder(View itemView) {
                 super(itemView);
+                ButterKnife.bind(this,itemView);
                 mParentInterface = (SearchResultFragment)getParentFragment();
-                mCompanyName = (TextView) itemView.findViewById(R.id.item_company_name);
-                mVacancyName = (TextView) itemView.findViewById(R.id.item_vacancy_name);
-                mJobDescription = (TextView) itemView.findViewById(R.id.item_job_description);
             }
 
+            //TODO: перенести онклик сюда - написать метод, который вызовем в адаптере, чтобы передать сюда показываемый item
             @Override
-            public void onClick(View view) {
-
-            }
+            public void onClick(View view) {}
         }
     }
 }
