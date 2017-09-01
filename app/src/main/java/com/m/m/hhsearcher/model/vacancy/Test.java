@@ -1,5 +1,5 @@
 
-package com.m.m.hhsearcher.vacancy;
+package com.m.m.hhsearcher.model.vacancy;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

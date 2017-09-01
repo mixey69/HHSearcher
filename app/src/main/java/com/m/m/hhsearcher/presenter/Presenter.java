@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.m.m.hhsearcher.model.Searcher;
 import com.m.m.hhsearcher.model.SearcherInterface;
-import com.m.m.hhsearcher.vacancy.Vacancy;
-import com.m.m.hhsearcher.vacancy_item.Item;
+import com.m.m.hhsearcher.model.vacancy.Vacancy;
+import com.m.m.hhsearcher.model.vacancy_item.Item;
 import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
 import com.m.m.hhsearcher.view.VacancyViewInterface;
@@ -45,7 +45,7 @@ public class Presenter implements PresenterInterface {
         return localInstance;
     }
 
-    public Presenter() {
+    private Presenter() {
 
         TimeZone tz = TimeZone.getTimeZone("Europe/Moscow");
         mDateFormat = new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss±hhmm");
@@ -81,7 +81,7 @@ public class Presenter implements PresenterInterface {
 
     @Override
     public void refreshSearchResultData() {
-        mSearcher.searchForNew(mLastRefreshmentTime,mSearchWord);
+        mSearcher.searchForNew(mSearchWord);
         mLastRefreshmentTime = mDateFormat.format(new Date());
         Log.e("timeOfCall", mLastRefreshmentTime);
     }

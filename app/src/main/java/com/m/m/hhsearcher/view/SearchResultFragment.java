@@ -5,18 +5,17 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.m.m.hhsearcher.R;
+import com.m.m.hhsearcher.model.vacancy_item.Item;
 import com.m.m.hhsearcher.presenter.Presenter;
 import com.m.m.hhsearcher.presenter.PresenterInterface;
-import com.m.m.hhsearcher.vacancy_item.Item;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +35,7 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
     PresenterInterface mPresenter;
     LinearLayoutManager mLayoutManager;
     FragmentManagerInterface mFragmentManager;
-    LinkedList<Item> mVacancyList;
+    volatile ArrayList<Item> mVacancyList;
     Disposable mSubscription;
 
     @Nullable
@@ -98,7 +97,7 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
     @Override
     public void showVacancyList(List<Item> vacancyList) {
         if(mVacancyList == null){
-            mVacancyList = new LinkedList<>(vacancyList);
+            mVacancyList = new ArrayList<>(vacancyList);
         }else {
             mVacancyList.addAll(vacancyList);
         }
@@ -107,15 +106,14 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
 
     @Override
     public void refreshVacancyList(List<Item> newVacancyList) {
-        for (int i = newVacancyList.size() -1 ; i < 0; i--){
-            mVacancyList.addFirst(newVacancyList.get(i));
-            mAdapter.notifyItemInserted(0);
+        int oldLength = mVacancyList.size();
+        for (int i = newVacancyList.size() -1 ; i >= 0; i--){
+            mVacancyList.add(0,newVacancyList.get(i));
         }
-        mAdapter.notifyDataSetChanged();
-        Log.e("refresh","refreshment had arrived" + newVacancyList.size() + ":" + newVacancyList.get(0));
+       mAdapter.notifyItemRangeInserted(0, newVacancyList.size());
     }
 
-    public class VacancyListAdapter extends RecyclerView.Adapter<VacancyListAdapter.VacancyViewHolder>{
+    class VacancyListAdapter extends RecyclerView.Adapter<VacancyListAdapter.VacancyViewHolder>{
         @Override
         public VacancyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.vacancy_item_layout, parent, false);

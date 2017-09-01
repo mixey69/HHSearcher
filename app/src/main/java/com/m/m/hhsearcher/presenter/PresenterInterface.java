@@ -1,7 +1,7 @@
 package com.m.m.hhsearcher.presenter;
 
-import com.m.m.hhsearcher.vacancy.Vacancy;
-import com.m.m.hhsearcher.vacancy_item.Item;
+import com.m.m.hhsearcher.model.vacancy.Vacancy;
+import com.m.m.hhsearcher.model.vacancy_item.Item;
 import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
 import com.m.m.hhsearcher.view.VacancyViewInterface;

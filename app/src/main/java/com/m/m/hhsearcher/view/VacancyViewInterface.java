@@ -1,6 +1,6 @@
 package com.m.m.hhsearcher.view;
 
-import com.m.m.hhsearcher.vacancy.Vacancy;
+import com.m.m.hhsearcher.model.vacancy.Vacancy;
 
 /**
  * Created by mac on 29.08.17.

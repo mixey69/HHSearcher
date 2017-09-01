@@ -1,5 +1,5 @@
 
-package com.m.m.hhsearcher.vacancy;
+package com.m.m.hhsearcher.model.vacancy_item;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -9,6 +9,9 @@ public class Employer {
     @SerializedName("logo_urls")
     @Expose
     public LogoUrls logoUrls;
+    @SerializedName("vacancies_url")
+    @Expose
+    public String vacanciesUrl;
     @SerializedName("name")
     @Expose
     public String name;
@@ -24,8 +27,5 @@ public class Employer {
     @SerializedName("trusted")
     @Expose
     public Boolean trusted;
-    @SerializedName("blacklisted")
-    @Expose
-    public Boolean blacklisted;
 
 }

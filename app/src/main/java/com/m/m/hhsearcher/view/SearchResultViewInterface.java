@@ -1,6 +1,6 @@
 package com.m.m.hhsearcher.view;
 
-import com.m.m.hhsearcher.vacancy_item.Item;
+import com.m.m.hhsearcher.model.vacancy_item.Item;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
 
-package com.m.m.hhsearcher.vacancy_item;
+package com.m.m.hhsearcher.model.vacancy_item;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

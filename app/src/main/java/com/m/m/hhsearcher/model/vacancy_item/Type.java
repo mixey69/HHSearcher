@@ -1,10 +1,10 @@
 
-package com.m.m.hhsearcher.vacancy;
+package com.m.m.hhsearcher.model.vacancy_item;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Schedule {
+public class Type {
 
     @SerializedName("id")
     @Expose

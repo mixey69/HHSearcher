@@ -3,8 +3,8 @@ package com.m.m.hhsearcher.model;
 import android.util.Log;
 
 import com.m.m.hhsearcher.presenter.PresenterInterface;
-import com.m.m.hhsearcher.vacancy.Vacancy;
-import com.m.m.hhsearcher.vacancy_item.Example;
+import com.m.m.hhsearcher.model.vacancy.Vacancy;
+import com.m.m.hhsearcher.model.vacancy_item.Example;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,6 +21,7 @@ public class Searcher implements SearcherInterface{
     private Retrofit mRetrofit;
     private HHApi mHHApi;
     private boolean isBusy;
+    private String mLatestFoundItemTime;
 
     private final static String SEARCH_URL = "https://api.hh.ru/";
 
@@ -31,6 +32,9 @@ public class Searcher implements SearcherInterface{
             @Override
             public void onResponse(Call<Example> call, Response<Example> response) {
                 isBusy = false;
+                if (response.body().items != null){
+                    mLatestFoundItemTime = response.body().items.get(0).createdAt.substring(0,19);
+                }
                 mPresenter.updateView(response.body().items);
             }
             /*
@@ -63,13 +67,15 @@ public class Searcher implements SearcherInterface{
     }
 
     @Override
-    public void searchForNew(String lastRefreshmentTime, String searchWord) {
-        mHHApi.getNewData(searchWord, 1, "publication_time", 10,lastRefreshmentTime).enqueue(new Callback<Example>() {
+    public void searchForNew(String searchWord) {
+        mHHApi.getNewData(searchWord, 1, "publication_time", 10, mLatestFoundItemTime).enqueue(new Callback<Example>() {
             @Override
             public void onResponse(Call<Example> call, Response<Example> response) {
-                if (response == null || response.body() == null || response.body().items == null ){
+                if (response.body() == null || response.body().items == null ){
                     return;
                 }else {
+                    Log.e("response",response.body().items.toString());
+                    mLatestFoundItemTime = response.body().items.get(0).createdAt.substring(0,19);
                     mPresenter.refreshSearchResultView(response.body().items);
                 }
             }

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.presenter.Presenter;
-import com.m.m.hhsearcher.vacancy.Vacancy;
+import com.m.m.hhsearcher.model.vacancy.Vacancy;
 
 /**
  * Created by mac on 29.08.17.

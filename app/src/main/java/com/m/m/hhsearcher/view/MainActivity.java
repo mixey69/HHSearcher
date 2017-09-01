@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.presenter.Presenter;
 import com.m.m.hhsearcher.presenter.PresenterInterface;
-import com.m.m.hhsearcher.vacancy_item.Item;
 
 /**
  * Created by mac on 29.08.17.

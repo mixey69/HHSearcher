@@ -1,14 +1,11 @@
 
-package com.m.m.hhsearcher.vacancy_item;
+package com.m.m.hhsearcher.model.vacancy;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Area {
+public class Department {
 
-    @SerializedName("url")
-    @Expose
-    public String url;
     @SerializedName("id")
     @Expose
     public String id;
