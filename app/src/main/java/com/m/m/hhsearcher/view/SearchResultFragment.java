@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,15 @@ import com.m.m.hhsearcher.presenter.Presenter;
 import com.m.m.hhsearcher.presenter.PresenterInterface;
 import com.m.m.hhsearcher.vacancy_item.Item;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by mac on 29.08.17.
@@ -27,7 +36,8 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
     PresenterInterface mPresenter;
     LinearLayoutManager mLayoutManager;
     FragmentManagerInterface mFragmentManager;
-    List<Item> mVacancyList;
+    LinkedList<Item> mVacancyList;
+    Disposable mSubscription;
 
     @Nullable
     @Override
@@ -56,17 +66,53 @@ public class SearchResultFragment extends Fragment implements SearchResultViewIn
                 }
             }
         });
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int firstVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+                if(firstVisibleItems == 0) {
+                    if (mSubscription == null) {
+                        mSubscription = Observable.interval(5000, TimeUnit.MILLISECONDS)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Long>() {
+                                    @Override
+                                    public void accept(@io.reactivex.annotations.NonNull Long aLong) throws Exception {
+                                        if (mLayoutManager.findFirstVisibleItemPosition() != 0) {
+                                            mSubscription.dispose();
+                                            mSubscription = null;
+                                        } else {
+                                            mPresenter.refreshSearchResultData();
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
+        });
+
         return view;
     }
 
     @Override
     public void showVacancyList(List<Item> vacancyList) {
         if(mVacancyList == null){
-            mVacancyList = vacancyList;
+            mVacancyList = new LinkedList<>(vacancyList);
         }else {
             mVacancyList.addAll(vacancyList);
         }
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void refreshVacancyList(List<Item> newVacancyList) {
+        for (int i = newVacancyList.size() -1 ; i < 0; i--){
+            mVacancyList.addFirst(newVacancyList.get(i));
+            mAdapter.notifyItemInserted(0);
+        }
+        mAdapter.notifyDataSetChanged();
+        Log.e("refresh","refreshment had arrived" + newVacancyList.size() + ":" + newVacancyList.get(0));
     }
 
     public class VacancyListAdapter extends RecyclerView.Adapter<VacancyListAdapter.VacancyViewHolder>{

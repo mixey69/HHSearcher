@@ -1,5 +1,7 @@
 package com.m.m.hhsearcher.presenter;
 
+import android.util.Log;
+
 import com.m.m.hhsearcher.model.Searcher;
 import com.m.m.hhsearcher.model.SearcherInterface;
 import com.m.m.hhsearcher.vacancy.Vacancy;
@@ -8,7 +10,11 @@ import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
 import com.m.m.hhsearcher.view.VacancyViewInterface;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by mac on 30.08.17.
@@ -22,6 +28,8 @@ public class Presenter implements PresenterInterface {
     private VacancyViewInterface mVacancyView;
     private String mSearchWord;
     private Integer mSearchTime;
+    private String mLastRefreshmentTime;
+    private DateFormat mDateFormat;
 
 
     public static Presenter getInstance() {
@@ -35,6 +43,13 @@ public class Presenter implements PresenterInterface {
             }
         }
         return localInstance;
+    }
+
+    public Presenter() {
+
+        TimeZone tz = TimeZone.getTimeZone("Europe/Moscow");
+        mDateFormat = new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss±hhmm");
+        mDateFormat.setTimeZone(tz);
     }
 
     public void setFragmentManager(FragmentManagerInterface mFragmentManager) {
@@ -54,6 +69,7 @@ public class Presenter implements PresenterInterface {
         if (mSearcher == null){
             mSearcher = new Searcher(this);
         }
+        mLastRefreshmentTime =mDateFormat.format(new Date());
         mSearcher.search(searchWord);
     }
 
@@ -61,6 +77,18 @@ public class Presenter implements PresenterInterface {
     public void loadMore() {
         mSearchTime++;
         mSearcher.search(mSearchWord);
+    }
+
+    @Override
+    public void refreshSearchResultData() {
+        mSearcher.searchForNew(mLastRefreshmentTime,mSearchWord);
+        mLastRefreshmentTime = mDateFormat.format(new Date());
+        Log.e("timeOfCall", mLastRefreshmentTime);
+    }
+
+    @Override
+    public void refreshSearchResultView(List<Item> newVacancyList) {
+        mSearchResultView.refreshVacancyList(newVacancyList);
     }
 
     @Override

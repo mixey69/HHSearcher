@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface SearchResultViewInterface {
     void showVacancyList(List<Item> vacancyList);
+    void refreshVacancyList(List<Item> newVacancyList);
 }

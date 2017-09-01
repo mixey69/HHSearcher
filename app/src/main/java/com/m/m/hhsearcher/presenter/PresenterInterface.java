@@ -23,4 +23,6 @@ public interface PresenterInterface {
     void getFullVacancyDescription(String vacancyId);
     void setVacancyView(VacancyViewInterface viewInterface);
     void displayVacancyData(Vacancy vacancy);
+    void refreshSearchResultData();
+    void refreshSearchResultView(List<Item> newVacancyList);
 }

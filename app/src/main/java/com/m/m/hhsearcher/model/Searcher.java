@@ -6,8 +6,6 @@ import com.m.m.hhsearcher.presenter.PresenterInterface;
 import com.m.m.hhsearcher.vacancy.Vacancy;
 import com.m.m.hhsearcher.vacancy_item.Example;
 
-import java.util.LinkedList;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,7 +25,7 @@ public class Searcher implements SearcherInterface{
     private final static String SEARCH_URL = "https://api.hh.ru/";
 
     @Override
-    public LinkedList search(String searchWord) {
+    public void search(String searchWord) {
         isBusy = true;
         mHHApi.getData(searchWord, mPresenter.getSearchTime(),"publication_time", 10).enqueue(new Callback<Example>() {
             @Override
@@ -35,6 +33,11 @@ public class Searcher implements SearcherInterface{
                 isBusy = false;
                 mPresenter.updateView(response.body().items);
             }
+            /*
+            date_from – дата, которая ограничивает снизу диапазон дат публикации вакансий.
+            Нельзя передавать вместе с параметром period.
+            Значение указывается в формате ISO 8601 - YYYY-MM-DD или с точность до секунды YYYY-MM-DDThh:mm:ss±hhmm.
+             */
 
             @Override
             public void onFailure(Call<Example> call, Throwable t) {
@@ -42,11 +45,10 @@ public class Searcher implements SearcherInterface{
                 Log.e("retrofit", "called onFailure");
             }
         });
-        return null;
     }
 
     @Override
-    public Vacancy findVacancy(String vacancyId) {
+    public void findVacancy(String vacancyId) {
         mHHApi.getVacancy(vacancyId).enqueue(new Callback<Vacancy>() {
             @Override
             public void onResponse(Call<Vacancy> call, Response<Vacancy> response) {
@@ -58,7 +60,25 @@ public class Searcher implements SearcherInterface{
                 Log.e("retrofit", "called onFailure");
             }
         });
-        return null;
+    }
+
+    @Override
+    public void searchForNew(String lastRefreshmentTime, String searchWord) {
+        mHHApi.getNewData(searchWord, 1, "publication_time", 10,lastRefreshmentTime).enqueue(new Callback<Example>() {
+            @Override
+            public void onResponse(Call<Example> call, Response<Example> response) {
+                if (response == null || response.body() == null || response.body().items == null ){
+                    return;
+                }else {
+                    mPresenter.refreshSearchResultView(response.body().items);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Example> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override

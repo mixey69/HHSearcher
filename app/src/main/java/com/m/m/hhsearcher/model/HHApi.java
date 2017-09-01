@@ -19,4 +19,7 @@ public interface HHApi {
     @GET("vacancies/{id}")
     Call<Vacancy> getVacancy(@Path("id") String vacancyId);
 
+    @GET("vacancies")
+    Call<Example> getNewData(@Query("text") String searchWord, @Query("page") int pageNumber, @Query("order_by") String orderBy, @Query("per_page") int perPage, @Query("date_from") String timeOfLastRefreshment);
+
 }
