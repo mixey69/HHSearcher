@@ -16,13 +16,8 @@ import butterknife.ButterKnife;
  * Created by mac on 01.09.17.
  */
 
-public class ViewFragment extends Fragment {
+public abstract class ViewFragment extends Fragment {
     protected PresenterViewInterface mPresenter;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Nullable
     @Override
@@ -33,7 +28,5 @@ public class ViewFragment extends Fragment {
         return view;
     }
 
-
-
-    protected int getLayoutId(){return 0;};
+    protected abstract int getLayoutId();
 }

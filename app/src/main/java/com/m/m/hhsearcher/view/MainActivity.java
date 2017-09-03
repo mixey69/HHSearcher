@@ -2,7 +2,6 @@ package com.m.m.hhsearcher.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import com.m.m.hhsearcher.R;
@@ -15,25 +14,22 @@ import com.m.m.hhsearcher.presenter.PresenterViewInterface;
 
 public class MainActivity extends AppCompatActivity implements FragmentManagerInterface {
 
-    private Fragment mDisplayedFragment;
-    private PresenterViewInterface mPresenterInterface;
+    private PresenterViewInterface mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mainactivity_layout);
-        mPresenterInterface = Presenter.getInstance();
-        mPresenterInterface.setFragmentManager(this);
-        displaySearchFragment();
+        mPresenter = Presenter.getInstance();
+        mPresenter.onFragmentManagerCreated(this);
     }
 
-    private void displayFragment(Fragment fragment, String TAG){
-        mDisplayedFragment = fragment;
+    private void displayFragment(ViewFragment fragment, String TAG){
         getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(TAG)
                 .replace(R.id.main_fragment_container,fragment, TAG)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     @Override

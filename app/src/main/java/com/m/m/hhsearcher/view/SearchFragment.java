@@ -33,16 +33,25 @@ public class SearchFragment extends ViewFragment {
                 mEditText.selectAll();
             }
         });
-        mSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String searchWord = mEditText.getText().toString();
-                if(searchWord.equals("")){
-                    Toast.makeText(getContext(), "Please, enter the search word!", Toast.LENGTH_LONG).show();
-                }else{
-                    mPresenter.startSearch(searchWord);
+        mSearchButton.setOnClickListener(
+//                (View v) -> {
+//            String searchWord = mEditText.getText().toString();
+//            if (searchWord.equals("")) {
+//                Toast.makeText(getContext(), "Please, enter the search word!", Toast.LENGTH_LONG).show();
+//            } else {
+//                mPresenter.startSearch(searchWord);
+//            }
+//        });
+ new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String searchWord = mEditText.getText().toString();
+                    if(searchWord.equals("")){
+                        Toast.makeText(getContext(), "Please, enter the search word!", Toast.LENGTH_LONG).show();
+                    }else{
+                        mPresenter.startSearch(searchWord);
+                    }
                 }
-            }
         });
         return view;
     }

@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.model.vacancy_item.Item;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,14 +34,13 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
     VacancyListAdapter mAdapter;
     LinearLayoutManager mLayoutManager;
     FragmentManagerInterface mFragmentManager;
-    volatile ArrayList<Item> mVacancyList;
+    List<Item> mVacancyList;
     Disposable mSubscription;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater,container,savedInstanceState);
-        mPresenter.setSearchResultView(this);
         mAdapter = new VacancyListAdapter();
         mRecyclerView.setAdapter(mAdapter);
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -69,7 +67,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
                 if(firstVisibleItem == 0) {
                     if (mSubscription == null) {
                         mSubscription = Observable.interval(0, 5000, TimeUnit.MILLISECONDS)
-                                .subscribeOn(Schedulers.newThread())
+                                .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Consumer<Long>() {
                                     @Override
@@ -78,7 +76,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
                                             mSubscription.dispose();
                                             mSubscription = null;
                                         } else {
-                                            mPresenter.refreshSearchResultData();
+                                            mPresenter.updateSearchResultData();
                                             mProgressBar.setVisibility(View.VISIBLE);
                                         }
                                     }
@@ -87,8 +85,26 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
                 }
             }
         });
-
+        mVacancyList = mPresenter.getVacancyList();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mVacancyList = mPresenter.getVacancyList();
+        mPresenter.setSearchResultView(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mSubscription != null){
+            mSubscription.dispose();
+            mSubscription = null;
+        }
+        mVacancyList = null;
+        mPresenter.clearView(getTag());
     }
 
     @Override
@@ -98,21 +114,15 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
 
     @Override
     public void showVacancyList(List<Item> vacancyList) {
-        if(mVacancyList == null){
-            mVacancyList = new ArrayList<>(vacancyList);
-        }else {
-            mVacancyList.addAll(vacancyList);
-        }
+        mVacancyList = mPresenter.getVacancyList();
         mAdapter.notifyDataSetChanged();
         mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void updateVacancyList(List<Item> newVacancyList) {
-        for (int i = newVacancyList.size() -1 ; i >= 0; i--){
-            mVacancyList.add(0,newVacancyList.get(i));
-        }
-       mAdapter.notifyItemRangeInserted(0, newVacancyList.size());
+        mVacancyList = mPresenter.getVacancyList();
+        mAdapter.notifyItemRangeInserted(0, newVacancyList.size());
         mProgressBar.setVisibility(View.GONE);
     }
 
@@ -127,7 +137,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
         public void onBindViewHolder(VacancyViewHolder holder, int position) {
             final Item displayedItem = mVacancyList.get(position);
             holder.mCompanyName.setText("at " + displayedItem.employer.name);
-            holder.mVacancyName.setText(displayedItem.name);
+            holder.mVacancyName.setText(displayedItem.createdAt);//TODO: place name instead of createdAt
             String jobDescription = displayedItem.snippet.toString();
             if (jobDescription.length() > 150){
                 jobDescription = jobDescription.substring(0,150) + "...";
@@ -136,7 +146,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mFragmentManager.displayVacancyFragment();
+                    mProgressBar.setVisibility(View.VISIBLE); //experimental
                     mPresenter.getFullVacancyDescription(displayedItem.id);
                 }
             });
@@ -144,14 +154,10 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
 
         @Override
         public int getItemCount() {
-            if (mVacancyList == null){
-                return 0;
-            }else {
-                return mVacancyList.size();
-            }
+            return mVacancyList == null ? 0 : mVacancyList.size();
         }
 
-        class VacancyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        class VacancyViewHolder extends RecyclerView.ViewHolder{
             @BindView(R.id.item_company_name) TextView mCompanyName;
             @BindView(R.id.item_vacancy_name) TextView mVacancyName;
             @BindView(R.id.item_job_description) TextView mJobDescription;
@@ -163,9 +169,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
                 mParentInterface = (SearchResultFragment)getParentFragment();
             }
 
-            //TODO: перенести онклик сюда - написать метод, который вызовем в адаптере, чтобы передать сюда показываемый item
-            @Override
-            public void onClick(View view) {}
+
         }
     }
 }

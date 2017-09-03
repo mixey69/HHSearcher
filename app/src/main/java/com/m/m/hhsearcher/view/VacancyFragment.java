@@ -1,5 +1,6 @@
 package com.m.m.hhsearcher.view;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -35,16 +36,29 @@ public class VacancyFragment extends ViewFragment implements VacancyViewInterfac
         mCompanyName.setText(mDisplayedVacancy.employer.name == null ? "not defined" : mDisplayedVacancy.employer.name);
         mEmployment.setText(mDisplayedVacancy.employment == null ? "not defined" : mDisplayedVacancy.employment.name);
         mSalary.setText(mDisplayedVacancy.salary == null ? "not defined" : mDisplayedVacancy.salary.toString());
-        mDescription.setText(mDisplayedVacancy.description == null ? "not defined" : Html.fromHtml(mDisplayedVacancy.description));
+        mDescription.setText(mDisplayedVacancy.description == null ? "not defined" : Build.VERSION.SDK_INT <= 24 ? Html.fromHtml(mDisplayedVacancy.description) : Html.fromHtml(mDisplayedVacancy.description,Html.FROM_HTML_MODE_COMPACT));
         //TODO: get rid of deprecated method
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater,container,savedInstanceState);
+        return super.onCreateView(inflater,container,savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(mDisplayedVacancy == null){
+            mPresenter.getVacancy();
+        }
         mPresenter.setVacancyView(this);
-        return view;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mPresenter.clearView(getTag());
     }
 
     @Override
