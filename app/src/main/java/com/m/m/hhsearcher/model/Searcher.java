@@ -1,15 +1,19 @@
 package com.m.m.hhsearcher.model;
 
-import android.util.Log;
-
 import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.model.vacancy_item.Example;
+import com.m.m.hhsearcher.model.vacancy_item.Item;
 import com.m.m.hhsearcher.presenter.PresenterModelInterface;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -32,6 +36,7 @@ public class Searcher implements SearcherInterface{
             mRetrofit = new Retrofit.Builder()
                     .baseUrl(SEARCH_URL)
                     .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
         }
         if(mHHApi == null){
@@ -50,66 +55,68 @@ public class Searcher implements SearcherInterface{
     @Override
     public void search(String searchWord, final boolean isFirstSearch) {
         isBusy = true;
-        mHHApi.getData(searchWord, mPresenter.getSearchTime(),"publication_time", 10).enqueue(new Callback<Example>() {
-            @Override
-            public void onResponse(Call<Example> call, Response<Example> response) {
-                isBusy = false;
-                if (response.body().items != null){
-                    if (isFirstSearch){
-                        mLatestFoundItemTime = response.body().items.get(0).createdAt.substring(0,19);
-                        //TODO:intercepting with searchfornew() data. loading all items twice
+        mHHApi.getData(searchWord, mPresenter.getSearchTime(),"publication_time", 10)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CallBackWrapper<Example>() {
+                    @Override
+                    protected void onSuccess(Example example) {
+                        isBusy = false;
+                        if(example.items != null) {
+                            if(!example.items.isEmpty()) {
+                                if (isFirstSearch) {
+                                    mLatestFoundItemTime = getLatestPublicationTime(example.items.get(0));
+                                }
+                                mPresenter.updateView(example.items);
+                            }else {
+                                mPresenter.ShowErrorMessage("Invalid search word");
+                            }
+                        }
                     }
-                }
-                mPresenter.updateView(response.body().items);
-            }
-            /*
-            date_from – дата, которая ограничивает снизу диапазон дат публикации вакансий.
-            Нельзя передавать вместе с параметром period.
-            Значение указывается в формате ISO 8601 - YYYY-MM-DD или с точность до секунды YYYY-MM-DDThh:mm:ss±hhmm.
-             */
-
-            @Override
-            public void onFailure(Call<Example> call, Throwable t) {
-                isBusy = false;
-                Log.e("retrofit", "called onFailure");
-            }
-        });
+                });
     }
 
     @Override
     public void findVacancy(String vacancyId) {
-        mHHApi.getVacancy(vacancyId).enqueue(new Callback<Vacancy>() {
-            @Override
-            public void onResponse(Call<Vacancy> call, Response<Vacancy> response) {
-                mPresenter.displayVacancyData(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<Vacancy> call, Throwable t) {
-                Log.e("retrofit", "called onFailure");
-            }
-        });
+        mHHApi.getVacancy(vacancyId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CallBackWrapper<Vacancy>() {
+                    @Override
+                    protected void onSuccess(Vacancy vacancy) {
+                        mPresenter.displayVacancyData(vacancy);
+                    }
+                });
     }
 
     @Override
     public void searchForNew(String searchWord) {
-        mHHApi.getNewData(searchWord, 1, "publication_time", 10, mLatestFoundItemTime).enqueue(new Callback<Example>() {
-            @Override
-            public void onResponse(Call<Example> call, Response<Example> response) {
-                if (response.body() == null || response.body().items == null ){
-                    return;
-                }else {
-                    Log.e("response",response.body().items.toString());
-                    mLatestFoundItemTime = response.body().items.get(0).createdAt.substring(0,19);
-                    mPresenter.refreshSearchResultView(response.body().items);
-                }
-            }
+        mHHApi.getNewData(searchWord, 1, "publication_time", 10, mLatestFoundItemTime)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CallBackWrapper<Example>() {
+                    @Override
+                    protected void onSuccess(Example example) {
+                        mLatestFoundItemTime = getLatestPublicationTime(example.items.get(0));
+                        if (example.items != null){
+                            mPresenter.refreshSearchResultView(example.items);
+                        }
+                    }
+                });
+    }
 
-            @Override
-            public void onFailure(Call<Example> call, Throwable t) {
-
-            }
-        });
+    private String getLatestPublicationTime(Item item){
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date date = null;
+        try {
+            date = dt.parse(item.createdAt.substring(0, 19));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.SECOND, 1);
+        return dt.format(c.getTime());
     }
 
     @Override

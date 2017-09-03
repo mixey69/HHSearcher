@@ -3,7 +3,7 @@ package com.m.m.hhsearcher.model;
 import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.model.vacancy_item.Example;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -14,12 +14,12 @@ import retrofit2.http.Query;
 
 public interface HHApi {
     @GET("vacancies")
-    Call<Example> getData(@Query("text") String searchWord, @Query("page") int pageNumber, @Query("order_by") String orderBy, @Query("per_page") int perPage);
+    Observable<Example> getData(@Query("text") String searchWord, @Query("page") int pageNumber, @Query("order_by") String orderBy, @Query("per_page") int perPage);
 
     @GET("vacancies/{id}")
-    Call<Vacancy> getVacancy(@Path("id") String vacancyId);
+    Observable<Vacancy> getVacancy(@Path("id") String vacancyId);
 
     @GET("vacancies")
-    Call<Example> getNewData(@Query("text") String searchWord, @Query("page") int pageNumber, @Query("order_by") String orderBy, @Query("per_page") int perPage, @Query("date_from") String timeOfLastRefreshment);
+    Observable<Example> getNewData(@Query("text") String searchWord, @Query("page") int pageNumber, @Query("order_by") String orderBy, @Query("per_page") int perPage, @Query("date_from") String timeOfLastRefreshment);
 
 }

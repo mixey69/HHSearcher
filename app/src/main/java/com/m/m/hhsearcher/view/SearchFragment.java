@@ -19,39 +19,26 @@ import butterknife.BindView;
  */
 
 public class SearchFragment extends ViewFragment {
-    @BindView(R.id.search_button) Button mSearchButton;
-    @BindView(R.id.search_edit_text) EditText mEditText;
+    @BindView(R.id.search_button)
+    Button mSearchButton;
+    @BindView(R.id.search_edit_text)
+    EditText mEditText;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater,container,savedInstanceState);
-        mEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mEditText.selectAll();
-            }
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        mEditText.setOnClickListener((View v) -> {
+            mEditText.selectAll();
         });
-        mSearchButton.setOnClickListener(
-//                (View v) -> {
-//            String searchWord = mEditText.getText().toString();
-//            if (searchWord.equals("")) {
-//                Toast.makeText(getContext(), "Please, enter the search word!", Toast.LENGTH_LONG).show();
-//            } else {
-//                mPresenter.startSearch(searchWord);
-//            }
-//        });
- new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String searchWord = mEditText.getText().toString();
-                    if(searchWord.equals("")){
-                        Toast.makeText(getContext(), "Please, enter the search word!", Toast.LENGTH_LONG).show();
-                    }else{
-                        mPresenter.startSearch(searchWord);
-                    }
-                }
+        mSearchButton.setOnClickListener((View v) -> {
+            String searchWord = mEditText.getText().toString();
+            if (searchWord.equals("")) {
+                Toast.makeText(getContext(), "Please, enter the search word!", Toast.LENGTH_LONG).show();
+            } else {
+                mPresenter.startSearch(searchWord);
+            }
         });
         return view;
     }

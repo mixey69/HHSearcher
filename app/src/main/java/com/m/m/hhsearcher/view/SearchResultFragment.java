@@ -21,16 +21,17 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by mac on 29.08.17.
  */
 
-public class SearchResultFragment extends ViewFragment implements SearchResultViewInterface{
-    @BindView(R.id.vacancy_list) RecyclerView mRecyclerView;
-    @BindView(R.id.progress_bar) ProgressBar mProgressBar;
+public class SearchResultFragment extends ViewFragment implements SearchResultViewInterface {
+    @BindView(R.id.vacancy_list)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.progress_bar)
+    ProgressBar mProgressBar;
     VacancyListAdapter mAdapter;
     LinearLayoutManager mLayoutManager;
     FragmentManagerInterface mFragmentManager;
@@ -40,12 +41,12 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater,container,savedInstanceState);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
         mAdapter = new VacancyListAdapter();
         mRecyclerView.setAdapter(mAdapter);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mFragmentManager = (MainActivity)getActivity();
+        mFragmentManager = (MainActivity) getActivity();
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -53,10 +54,10 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
                 int visibleItemCount = mLayoutManager.getChildCount();//смотрим сколько элементов на экране
                 int totalItemCount = mLayoutManager.getItemCount();//сколько всего элементов
                 int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
-                    if ((visibleItemCount+firstVisibleItem) >= totalItemCount) {
-                            mPresenter.loadMore();
-                            mProgressBar.setVisibility(View.VISIBLE);
-                    }
+                if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
+                    mPresenter.loadMore();
+                    mProgressBar.setVisibility(View.VISIBLE);
+                }
             }
         });
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -64,21 +65,18 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-                if(firstVisibleItem == 0) {
+                if (firstVisibleItem == 0) {
                     if (mSubscription == null) {
                         mSubscription = Observable.interval(0, 5000, TimeUnit.MILLISECONDS)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<Long>() {
-                                    @Override
-                                    public void accept(@io.reactivex.annotations.NonNull Long aLong) throws Exception {
-                                        if (mLayoutManager.findFirstVisibleItemPosition() != 0) {
-                                            mSubscription.dispose();
-                                            mSubscription = null;
-                                        } else {
-                                            mPresenter.updateSearchResultData();
-                                            mProgressBar.setVisibility(View.VISIBLE);
-                                        }
+                                .subscribe((Long l) -> {
+                                    if (mLayoutManager.findFirstVisibleItemPosition() != 0) {
+                                        mSubscription.dispose();
+                                        mSubscription = null;
+                                    } else {
+                                        mPresenter.updateSearchResultData();
+                                        mProgressBar.setVisibility(View.VISIBLE);
                                     }
                                 });
                     }
@@ -99,7 +97,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
     @Override
     public void onStop() {
         super.onStop();
-        if(mSubscription != null){
+        if (mSubscription != null) {
             mSubscription.dispose();
             mSubscription = null;
         }
@@ -126,7 +124,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
         mProgressBar.setVisibility(View.GONE);
     }
 
-    class VacancyListAdapter extends RecyclerView.Adapter<VacancyListAdapter.VacancyViewHolder>{
+    class VacancyListAdapter extends RecyclerView.Adapter<VacancyListAdapter.VacancyViewHolder> {
         @Override
         public VacancyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.vacancy_item_layout, parent, false);
@@ -137,18 +135,14 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
         public void onBindViewHolder(VacancyViewHolder holder, int position) {
             final Item displayedItem = mVacancyList.get(position);
             holder.mCompanyName.setText("at " + displayedItem.employer.name);
-            holder.mVacancyName.setText(displayedItem.createdAt);//TODO: place name instead of createdAt
+            holder.mVacancyName.setText(displayedItem.name);
             String jobDescription = displayedItem.snippet.toString();
-            if (jobDescription.length() > 150){
-                jobDescription = jobDescription.substring(0,150) + "...";
+            if (jobDescription.length() > 150) {
+                jobDescription = jobDescription.substring(0, 150) + "...";
             }
             holder.mJobDescription.setText(jobDescription);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mProgressBar.setVisibility(View.VISIBLE); //experimental
-                    mPresenter.getFullVacancyDescription(displayedItem.id);
-                }
+            holder.itemView.setOnClickListener((View v) -> {
+                mPresenter.getFullVacancyDescription(displayedItem.id);
             });
         }
 
@@ -157,16 +151,19 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
             return mVacancyList == null ? 0 : mVacancyList.size();
         }
 
-        class VacancyViewHolder extends RecyclerView.ViewHolder{
-            @BindView(R.id.item_company_name) TextView mCompanyName;
-            @BindView(R.id.item_vacancy_name) TextView mVacancyName;
-            @BindView(R.id.item_job_description) TextView mJobDescription;
+        class VacancyViewHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.item_company_name)
+            TextView mCompanyName;
+            @BindView(R.id.item_vacancy_name)
+            TextView mVacancyName;
+            @BindView(R.id.item_job_description)
+            TextView mJobDescription;
             SearchResultViewInterface mParentInterface;
 
             private VacancyViewHolder(View itemView) {
                 super(itemView);
-                ButterKnife.bind(this,itemView);
-                mParentInterface = (SearchResultFragment)getParentFragment();
+                ButterKnife.bind(this, itemView);
+                mParentInterface = (SearchResultFragment) getParentFragment();
             }
 
 

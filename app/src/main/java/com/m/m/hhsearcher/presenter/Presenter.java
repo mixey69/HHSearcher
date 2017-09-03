@@ -8,6 +8,7 @@ import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
 import com.m.m.hhsearcher.view.VacancyViewInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,22 +37,6 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
 
     private Presenter() {
     }
-
-//    public void setFragmentManager(FragmentManagerInterface mFragmentManager, ViewFragment fragment) {
-//        this.mFragmentManager = mFragmentManager;
-//        if(fragment == null){
-//            mFragmentManager.displaySearchFragment();
-//        }else{
-//            switch (fragment.getTag()){
-//                case "SEARCH_FRAGMENT":
-//                    mFragmentManager.displaySearchFragment();
-//                case "SEARCH_RESULT_FRAGMENT":
-//                    mFragmentManager.displaySearchResultFragment();
-//                case "VACANCY_FRAGMENT":
-//                    mFragmentManager.displayVacancyFragment();
-//            }
-//        }
-//    }
 
     @Override
     public void onFragmentManagerCreated(FragmentManagerInterface fragmentManager) {
@@ -117,22 +102,25 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
 
     @Override
     public void refreshSearchResultView(List<Item> newVacancyList) {
-        for (int i = newVacancyList.size() -1 ; i >= 0; i--){
-            mVacancyList.add(0,newVacancyList.get(i));
+        if (!mVacancyList.get(0).equals(newVacancyList.get(0))) {
+            for (int i = newVacancyList.size() - 1; i >= 0; i--) {
+                mVacancyList.add(0, newVacancyList.get(i));
+            }
+            mSearchResultView.updateVacancyList(newVacancyList);
+        }else {
+            mSearchResultView.updateVacancyList(new ArrayList<>());
         }
-        mSearchResultView.updateVacancyList(newVacancyList);
     }
 
     @Override
     public void getFullVacancyDescription(String vacancyId) {
-        mFragmentManager.displayVacancyFragment();
         mSearcher.findVacancy(vacancyId);
     }
 
     @Override
     public void displayVacancyData(Vacancy vacancy) {
         mVacancy = vacancy;
-        mVacancyView.showVacancy(vacancy);
+        mFragmentManager.displayVacancyFragment(vacancy);
     }
 
     @Override
@@ -152,5 +140,11 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
     @Override
     public void setVacancyView(VacancyViewInterface viewInterface) {
         mVacancyView = viewInterface;
+    }
+
+
+    @Override
+    public void ShowErrorMessage(String message) {
+        mFragmentManager.makeAToast(message);
     }
 }

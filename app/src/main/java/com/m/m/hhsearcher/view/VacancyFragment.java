@@ -50,15 +50,25 @@ public class VacancyFragment extends ViewFragment implements VacancyViewInterfac
     public void onStart() {
         super.onStart();
         if(mDisplayedVacancy == null){
-            mPresenter.getVacancy();
+           mDisplayedVacancy = mPresenter.getVacancy();
         }
         mPresenter.setVacancyView(this);
+        mCityName.setText(mDisplayedVacancy.address == null ? "not defined" : mDisplayedVacancy.address.city);
+        mJobName.setText(mDisplayedVacancy.name == null ? "not defined" : mDisplayedVacancy.name);
+        mCompanyName.setText(mDisplayedVacancy.employer.name == null ? "not defined" : mDisplayedVacancy.employer.name);
+        mEmployment.setText(mDisplayedVacancy.employment == null ? "not defined" : mDisplayedVacancy.employment.name);
+        mSalary.setText(mDisplayedVacancy.salary == null ? "not defined" : mDisplayedVacancy.salary.toString());
+        mDescription.setText(mDisplayedVacancy.description == null ? "not defined" : Build.VERSION.SDK_INT <= 24 ? Html.fromHtml(mDisplayedVacancy.description) : Html.fromHtml(mDisplayedVacancy.description,Html.FROM_HTML_MODE_COMPACT));
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mPresenter.clearView(getTag());
+    }
+
+    public void setDisplayedVacancy(Vacancy mDisplayedVacancy) {
+        this.mDisplayedVacancy = mDisplayedVacancy;
     }
 
     @Override

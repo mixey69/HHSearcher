@@ -3,8 +3,10 @@ package com.m.m.hhsearcher.view;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.m.m.hhsearcher.R;
+import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.presenter.Presenter;
 import com.m.m.hhsearcher.presenter.PresenterViewInterface;
 
@@ -33,6 +35,11 @@ public class MainActivity extends AppCompatActivity implements FragmentManagerIn
     }
 
     @Override
+    public void makeAToast(String text) {
+        Toast.makeText(this,text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void displaySearchFragment() {
         displayFragment(new SearchFragment(), getString(R.string.search_fragment));
     }
@@ -43,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManagerIn
     }
 
     @Override
-    public void displayVacancyFragment() {
-        displayFragment(new VacancyFragment(), getString(R.string.vacancy_fragment));
+    public void displayVacancyFragment(Vacancy vacancy) {
+        VacancyFragment fragment = new VacancyFragment();
+        fragment.setDisplayedVacancy(vacancy);
+        displayFragment(fragment, getString(R.string.vacancy_fragment));
     }
 }

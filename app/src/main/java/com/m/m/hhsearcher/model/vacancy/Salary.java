@@ -8,7 +8,7 @@ public class Salary {
 
     @SerializedName("to")
     @Expose
-    public Object to;
+    public Integer to;
     @SerializedName("from")
     @Expose
     public Integer from;

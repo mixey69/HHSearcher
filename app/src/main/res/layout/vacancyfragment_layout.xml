@@ -3,64 +3,90 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:stretchColumns="1"
+        android:shrinkColumns="1, true">
+        <TableRow
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="3dp">
             <TextView
                 android:id="@+id/job_name"
                 style="@style/Base.TextAppearance.AppCompat.Headline"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_span="2" />
+        </TableRow>
+        <TableRow
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="3dp">
+            <TextView
+                android:text="Company:"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="center_vertical"
+                style="@style/Base.TextAppearance.AppCompat.Body1"/>
 
             <TextView
+                android:layout_width="wrap_content"
                 android:id="@+id/company_name"
-                style="@style/Base.TextAppearance.AppCompat.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/job_name"
-                android:layout_margin="5dp" />
+                style="@style/Base.TextAppearance.AppCompat.Body2" />
+        </TableRow>
+        <TableRow
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="3dp">
+            <TextView
+                android:text="City:"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="center_vertical"
+                style="@style/Base.TextAppearance.AppCompat.Body1"/>
 
             <TextView
+                android:layout_width="wrap_content"
                 android:id="@+id/city"
-                style="@style/Base.TextAppearance.AppCompat.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/job_name"
-                android:layout_margin="5dp"
-                android:layout_toEndOf="@id/company_name" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+                style="@style/Base.TextAppearance.AppCompat.Body2" />
+        </TableRow>
+        <TableRow
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="3dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            >
+            <TextView
+                android:text="Employment:"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="center_vertical"
+                style="@style/Base.TextAppearance.AppCompat.Body1"/>
 
             <TextView
-                android:id="@+id/type_of_employment"
-                style="@style/Base.TextAppearance.AppCompat.Body2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"/>
+                android:id="@+id/type_of_employment"
+                style="@style/Base.TextAppearance.AppCompat.Body2" />
+        </TableRow>
+        <TableRow
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="3dp">
+            <TextView
+                android:text="Salary:"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="center_vertical"
+                style="@style/Base.TextAppearance.AppCompat.Body1"
+                />
 
             <TextView
                 android:id="@+id/salary"
                 style="@style/Base.TextAppearance.AppCompat.Body2"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_span="2"
+                android:id="@+id/job_description"
+                style="@style/Base.TextAppearance.AppCompat"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/job_description"
-            style="@style/Base.TextAppearance.AppCompat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-    </LinearLayout>
+                android:layout_margin="3dp"/>
+        </TableRow>
+    </TableLayout>
 </ScrollView>

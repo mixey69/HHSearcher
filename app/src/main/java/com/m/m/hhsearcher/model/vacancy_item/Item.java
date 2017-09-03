@@ -66,4 +66,13 @@ public class Item {
     @Expose
     public String id;
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Item)){
+            return false;
+        }else {
+            Item i = (Item) obj;
+            return createdAt.equals(i.createdAt);
+        }
+    }
 }

@@ -14,4 +14,5 @@ public interface PresenterModelInterface {
     void updateView(List<Item> vacancyList);
     void displayVacancyData(Vacancy vacancy);
     void refreshSearchResultView(List<Item> newVacancyList);
+    void ShowErrorMessage(String message);
 }
