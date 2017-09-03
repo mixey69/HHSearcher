@@ -38,6 +38,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
     List<Item> mVacancyList;
     Disposable mSubscription;
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,9 +54,9 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
                 super.onScrolled(recyclerView, dx, dy);
                 int visibleItemCount = mLayoutManager.getChildCount();//смотрим сколько элементов на экране
                 int totalItemCount = mLayoutManager.getItemCount();//сколько всего элементов
-                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
+                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();//позиция первого элемента
                 if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
-                    mPresenter.loadMore();
+                    mPresenter.onAskedForMoreData();
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -102,7 +103,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
             mSubscription = null;
         }
         mVacancyList = null;
-        mPresenter.clearView(getTag());
+        mPresenter.clearViewLink();
     }
 
     @Override

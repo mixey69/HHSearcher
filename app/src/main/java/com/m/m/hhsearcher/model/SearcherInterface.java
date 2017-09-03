@@ -8,5 +8,5 @@ public interface SearcherInterface {
     void search(String searchWord,boolean isFirstSearch);
     boolean getIsBusy();
     void findVacancy(String vacancyId);
-    void searchForNew(String searchWord);
+    void searchForNew(String searchWord, int itemAmount);
 }

@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface PresenterModelInterface {
     Integer getSearchTime();
-    void updateView(List<Item> vacancyList);
+    void onVacancyListFound(List<Item> vacancyList);
     void displayVacancyData(Vacancy vacancy);
-    void refreshSearchResultView(List<Item> newVacancyList);
+    void updateSearchResultView(List<Item> newVacancyList);
     void ShowErrorMessage(String message);
 }

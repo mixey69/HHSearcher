@@ -1,5 +1,7 @@
 package com.m.m.hhsearcher.model;
 
+import android.annotation.SuppressLint;
+
 import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.model.vacancy_item.Example;
 import com.m.m.hhsearcher.model.vacancy_item.Item;
@@ -27,6 +29,7 @@ public class Searcher implements SearcherInterface{
     private HHApi mHHApi;
     private boolean isBusy;
     private String mLatestFoundItemTime;
+    private boolean isSearchingForMore;
 
     private final static String SEARCH_URL = "https://api.hh.ru/";
 
@@ -67,11 +70,17 @@ public class Searcher implements SearcherInterface{
                                 if (isFirstSearch) {
                                     mLatestFoundItemTime = getLatestPublicationTime(example.items.get(0));
                                 }
-                                mPresenter.updateView(example.items);
+                                mPresenter.onVacancyListFound(example.items);
                             }else {
                                 mPresenter.ShowErrorMessage("Invalid search word");
                             }
                         }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        isBusy = false;
+                        super.onError(e);
                     }
                 });
     }
@@ -90,23 +99,32 @@ public class Searcher implements SearcherInterface{
     }
 
     @Override
-    public void searchForNew(String searchWord) {
-        mHHApi.getNewData(searchWord, 1, "publication_time", 10, mLatestFoundItemTime)
+    public void searchForNew(String searchWord , int itemAmount) {
+        mHHApi.getNewData(searchWord, 1, "publication_time", itemAmount, mLatestFoundItemTime)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CallBackWrapper<Example>() {
                     @Override
                     protected void onSuccess(Example example) {
-                        mLatestFoundItemTime = getLatestPublicationTime(example.items.get(0));
-                        if (example.items != null){
-                            mPresenter.refreshSearchResultView(example.items);
+                        if (example.items != null ){
+                            if (!example.items.isEmpty()){
+                                mLatestFoundItemTime = getLatestPublicationTime(example.items.get(0));
+                            }
+                            if(example.found <= 10 || isSearchingForMore){
+                                isSearchingForMore = false;
+                                mPresenter.updateSearchResultView(example.items);
+                            }else {
+                                isSearchingForMore = true;
+                                searchForNew(searchWord, example.found);
+                            }
+
                         }
                     }
                 });
     }
 
     private String getLatestPublicationTime(Item item){
-        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date date = null;
         try {
             date = dt.parse(item.createdAt.substring(0, 19));

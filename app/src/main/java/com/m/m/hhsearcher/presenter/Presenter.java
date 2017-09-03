@@ -6,7 +6,6 @@ import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.model.vacancy_item.Item;
 import com.m.m.hhsearcher.view.FragmentManagerInterface;
 import com.m.m.hhsearcher.view.SearchResultViewInterface;
-import com.m.m.hhsearcher.view.VacancyViewInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,23 +19,11 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
     private FragmentManagerInterface mFragmentManager;
     private SearchResultViewInterface mSearchResultView;
     private SearcherInterface mSearcher;
-    private VacancyViewInterface mVacancyView;
     private String mSearchWord;
     private Integer mSearchTime;
     private List<Item> mVacancyList;
     private Vacancy mVacancy;
 
-
-    public static Presenter getInstance() {
-        Presenter localInstance = instance;
-        if (localInstance == null) {
-            instance = localInstance = new Presenter();
-        }
-        return localInstance;
-    }
-
-    private Presenter() {
-    }
 
     @Override
     public void onFragmentManagerCreated(FragmentManagerInterface fragmentManager) {
@@ -50,23 +37,27 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
     }
 
     @Override
-    public void clearView(String TAG) {
-        switch (TAG){
-            case "SEARCH_RESULT_FRAGMENT":
-                mSearchResultView = null;
-            case "VACANCY_FRAGMENT":
-                mVacancyView = null;
+    public void startSearch(String searchWord) {
+        mSearchTime = 1;
+        mSearchWord = searchWord;
+        mFragmentManager.displaySearchResultFragment();
+        mVacancyList = null;
+        if (mSearcher == null) {
+            mSearcher = Searcher.getInstance(this);
         }
-
+        mSearcher.search(searchWord, true);
     }
-
-    public List<Item> getVacancyList() {
-        return mVacancyList;
-    }
-
 
     @Override
-    public void updateView(List<Item> vacancyList) {
+    public void onAskedForMoreData() {
+        if(!mSearcher.getIsBusy()){
+            mSearchTime++;
+            mSearcher.search(mSearchWord,false);
+        }
+    }
+
+    @Override
+    public void onVacancyListFound(List<Item> vacancyList) {
         if (mVacancyList == null){
             mVacancyList = vacancyList;
         }else {
@@ -76,39 +67,25 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
     }
 
     @Override
-    public void startSearch(String searchWord) {
-        mSearchTime = 1;
-        mSearchWord = searchWord;
-        mVacancyList = null;
-        mFragmentManager.displaySearchResultFragment();
-        if (mSearcher == null) {
-            mSearcher = Searcher.getInstance(this);
-        }
-        mSearcher.search(searchWord, true);
-    }
-
-    @Override
-    public void loadMore() {
-        if(!mSearcher.getIsBusy()){
-            mSearchTime++;
-            mSearcher.search(mSearchWord,false);
-        }
-    }
-
-    @Override
     public void updateSearchResultData() {
-        mSearcher.searchForNew(mSearchWord);
+        mSearcher.searchForNew(mSearchWord, 10);
     }
 
     @Override
-    public void refreshSearchResultView(List<Item> newVacancyList) {
-        if (!mVacancyList.get(0).equals(newVacancyList.get(0))) {
-            for (int i = newVacancyList.size() - 1; i >= 0; i--) {
-                mVacancyList.add(0, newVacancyList.get(i));
-            }
-            mSearchResultView.updateVacancyList(newVacancyList);
-        }else {
+    public void updateSearchResultView(List<Item> newVacancyList) {
+        if (newVacancyList.isEmpty()){
             mSearchResultView.updateVacancyList(new ArrayList<>());
+        }else {
+            if (!mVacancyList.get(0).equals(newVacancyList.get(0))) {
+                for (int i = newVacancyList.size() - 1; i >= 0; i--) {
+                    if (!mVacancyList.contains(newVacancyList.get(i))) {
+                        mVacancyList.add(0, newVacancyList.get(i));
+                    }
+                }
+                mSearchResultView.updateVacancyList(newVacancyList);
+            } else {
+                mSearchResultView.updateVacancyList(new ArrayList<>());
+            }
         }
     }
 
@@ -124,6 +101,25 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
     }
 
     @Override
+    public void ShowErrorMessage(String message) {
+        if (message.equals("Invalid search word")){
+            mFragmentManager.displaySearchFragment();
+        }
+        mFragmentManager.makeAToast(message);
+    }
+
+    public void setSearchResultView(SearchResultViewInterface searchResultView) {
+        this.mSearchResultView = searchResultView;
+    }
+
+    @Override
+    public void clearViewLink() { mSearchResultView = null; }
+
+    public List<Item> getVacancyList() {
+        return mVacancyList;
+    }
+
+    @Override
     public Vacancy getVacancy() {
         return mVacancy;
     }
@@ -133,18 +129,14 @@ public class Presenter implements PresenterViewInterface, PresenterModelInterfac
         return mSearchTime;
     }
 
-    public void setSearchResultView(SearchResultViewInterface searchResultView) {
-        this.mSearchResultView = searchResultView;
+    public static Presenter getInstance() {
+        Presenter localInstance = instance;
+        if (localInstance == null) {
+            instance = localInstance = new Presenter();
+        }
+        return localInstance;
     }
 
-    @Override
-    public void setVacancyView(VacancyViewInterface viewInterface) {
-        mVacancyView = viewInterface;
-    }
-
-
-    @Override
-    public void ShowErrorMessage(String message) {
-        mFragmentManager.makeAToast(message);
+    private Presenter() {
     }
 }

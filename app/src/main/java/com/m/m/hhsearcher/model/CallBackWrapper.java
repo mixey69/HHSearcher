@@ -2,6 +2,8 @@ package com.m.m.hhsearcher.model;
 
 import com.m.m.hhsearcher.presenter.Presenter;
 
+import java.io.IOException;
+
 import io.reactivex.observers.DisposableObserver;
 
 /**
@@ -19,7 +21,11 @@ abstract class CallBackWrapper <T> extends DisposableObserver<T> {
 
     @Override
     public void onError(Throwable e) {
-        Presenter.getInstance().ShowErrorMessage(e.toString());
+        if(e instanceof IOException){
+            Presenter.getInstance().ShowErrorMessage("Connection problem. Check your Internet connection and try again");
+        }else {
+            Presenter.getInstance().ShowErrorMessage(e.toString());
+        }
     }
 
     @Override
