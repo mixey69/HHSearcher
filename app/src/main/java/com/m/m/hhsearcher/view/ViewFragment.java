@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.m.m.hhsearcher.presenter.Presenter;
-import com.m.m.hhsearcher.presenter.PresenterViewInterface;
+import com.m.m.hhsearcher.presenter.PresenterInterface;
 
 import butterknife.ButterKnife;
 
@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
  */
 
 public abstract class ViewFragment extends Fragment {
-    protected PresenterViewInterface mPresenter;
+    protected PresenterInterface mPresenter;
 
     @Nullable
     @Override

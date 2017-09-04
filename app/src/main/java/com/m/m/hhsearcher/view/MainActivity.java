@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.m.m.hhsearcher.R;
 import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.presenter.Presenter;
-import com.m.m.hhsearcher.presenter.PresenterViewInterface;
+import com.m.m.hhsearcher.presenter.PresenterInterface;
 
 /**
  * Created by mac on 29.08.17.
@@ -16,7 +16,7 @@ import com.m.m.hhsearcher.presenter.PresenterViewInterface;
 
 public class MainActivity extends AppCompatActivity implements FragmentManagerInterface {
 
-    private PresenterViewInterface mPresenter;
+    private PresenterInterface mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -24,6 +24,19 @@ public class MainActivity extends AppCompatActivity implements FragmentManagerIn
         setContentView(R.layout.mainactivity_layout);
         mPresenter = Presenter.getInstance();
         mPresenter.onFragmentManagerCreated(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mPresenter.clearViewLink("ACTIVITY");
+        mPresenter.onActivityRestarting();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.setFragmentManager(this);
     }
 
     private void displayFragment(ViewFragment fragment, String TAG){
@@ -36,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManagerIn
 
     @Override
     public void makeAToast(String text) {
-        Toast.makeText(this,text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     @Override

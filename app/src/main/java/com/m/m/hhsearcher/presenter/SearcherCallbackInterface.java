@@ -9,7 +9,7 @@ import java.util.List;
  * Created by mac on 01.09.17.
  */
 
-public interface PresenterModelInterface {
+public interface SearcherCallbackInterface {
     Integer getSearchTime();
     void onVacancyListFound(List<Item> vacancyList);
     void displayVacancyData(Vacancy vacancy);

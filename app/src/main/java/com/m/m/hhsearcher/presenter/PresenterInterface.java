@@ -11,14 +11,16 @@ import java.util.List;
  * Created by mac on 30.08.17.
  */
 
-public interface PresenterViewInterface {
+public interface PresenterInterface {
     void startSearch(String searchWord);
     void setSearchResultView(SearchResultViewInterface searchResultViewInterface);
+    void setFragmentManager(FragmentManagerInterface fragmentManager);
     void onAskedForMoreData();
     void getFullVacancyDescription(String vacancyId);
     void updateSearchResultData();
     void onFragmentManagerCreated(FragmentManagerInterface fragmentManager);
     List<Item> getVacancyList();
     Vacancy getVacancy();
-    void clearViewLink();
+    void clearViewLink(String TAG);
+    void onActivityRestarting();
 }

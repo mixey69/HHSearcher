@@ -103,7 +103,7 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
             mSubscription = null;
         }
         mVacancyList = null;
-        mPresenter.clearViewLink();
+        mPresenter.clearViewLink(getTag());
     }
 
     @Override
@@ -159,12 +159,10 @@ public class SearchResultFragment extends ViewFragment implements SearchResultVi
             TextView mVacancyName;
             @BindView(R.id.item_job_description)
             TextView mJobDescription;
-            SearchResultViewInterface mParentInterface;
 
             private VacancyViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.bind(this, itemView);
-                mParentInterface = (SearchResultFragment) getParentFragment();
             }
 
 
