@@ -1,6 +1,6 @@
 package com.m.m.hhsearcher.presenter;
 
-import com.m.m.hhsearcher.model.Searcher;
+import com.m.m.hhsearcher.model.Application;
 import com.m.m.hhsearcher.model.SearcherInterface;
 import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.model.vacancy_item.Item;
@@ -10,6 +10,8 @@ import com.m.m.hhsearcher.view.SearchResultViewInterface;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Created by mac on 30.08.17.
  */
@@ -18,7 +20,7 @@ public class Presenter implements PresenterInterface, SearcherCallbackInterface 
     private static volatile Presenter instance;
     private FragmentManagerInterface mFragmentManager;
     private SearchResultViewInterface mSearchResultView;
-    private SearcherInterface mSearcher;
+    @Inject SearcherInterface mSearcher;
     private String mSearchWord;
     private Integer mSearchTime;
     private List<Item> mVacancyList;
@@ -28,6 +30,9 @@ public class Presenter implements PresenterInterface, SearcherCallbackInterface 
 
     @Override
     public void onFragmentManagerCreated(FragmentManagerInterface fragmentManager) {
+        if (mSearcher == null){
+            Application.getInstance().getInjectionComponent().inject(this);
+        }
         if (isActivityRestarting) {
             mFragmentManager = fragmentManager;
         } else {
@@ -42,9 +47,6 @@ public class Presenter implements PresenterInterface, SearcherCallbackInterface 
         mSearchTime = 1;
         mSearchWord = searchWord;
         mVacancyList = null;
-        if (mSearcher == null) {
-            mSearcher = Searcher.getInstance(this);
-        }
         mSearcher.search(searchWord, true);
     }
 

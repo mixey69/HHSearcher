@@ -5,12 +5,15 @@ import android.annotation.SuppressLint;
 import com.m.m.hhsearcher.model.vacancy.Vacancy;
 import com.m.m.hhsearcher.model.vacancy_item.Example;
 import com.m.m.hhsearcher.model.vacancy_item.Item;
+import com.m.m.hhsearcher.presenter.Presenter;
 import com.m.m.hhsearcher.presenter.SearcherCallbackInterface;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -22,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by mac on 30.08.17.
  */
 
-public class Searcher implements SearcherInterface {
+class Searcher implements SearcherInterface {
     private static volatile Searcher instance;
     private SearcherCallbackInterface mPresenter;
     private Retrofit mRetrofit;
@@ -33,21 +36,15 @@ public class Searcher implements SearcherInterface {
 
     private final static String SEARCH_URL = "https://api.hh.ru/";
 
-    private Searcher(SearcherCallbackInterface presenter) {
-        mPresenter = presenter;
+    @Inject
+    Searcher() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(SEARCH_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         mHHApi = mRetrofit.create(HHApi.class);
-    }
-
-    public static Searcher getInstance(SearcherCallbackInterface presenter) {
-        if (instance == null) {
-            instance =  new Searcher(presenter);
-        }
-        return instance;
+        mPresenter = Presenter.getInstance();
     }
 
     @Override
